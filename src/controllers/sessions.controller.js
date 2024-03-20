@@ -27,14 +27,24 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         req.session.destroy(async err => {
-        if (err) return res.status(500).send({ status: "error", error: "Couldn't logout" });
+            if (err) {
+                console.log("Error destroying session:", err);
+                return res.status(500).send({ status: "error", error: "Couldn't logout" });
+            }
+
             const userEmail = req.user.email;
             const user = await userModel.findOne({ email: userEmail });
-            res.send({ status: "success", message: "Successful logout"});
-        })
+
+            if (!user) {
+                return res.status(400).send({ status: "error", error: "User not found" });
+            }
+
+            res.send({ status: "success", message: "Successful logout" });
+        });
     } catch (error) {
-        console.log(error)
+        console.log("Error during logout:", error);
+        res.status(500).send({ status: "error", error: "Internal server error" });
     }
-    
-}
+};
+
 

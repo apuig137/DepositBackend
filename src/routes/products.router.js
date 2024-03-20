@@ -9,3 +9,4 @@ router.post("/", addProduct)
 router.delete("/:id", deleteProduct)
 
 export default router
+
