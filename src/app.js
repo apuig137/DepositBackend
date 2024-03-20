@@ -11,10 +11,13 @@ import __dirname from "./utils.js"
 import bodyParser from "body-parser"
 import initializePassport from "../config/passport.config.js"
 import passport from "passport"
+import cors from "cors"
 
 const app = express()
 const PORT = 8080
 const MONGO = `${config.db}`
+
+app.use(cors())
 
 mongoose.connect(MONGO, {
     useNewUrlParser: true,
