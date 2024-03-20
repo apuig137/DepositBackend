@@ -25,11 +25,16 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    req.session.destroy(async err => {
+    try {
+        req.session.destroy(async err => {
         if (err) return res.status(500).send({ status: "error", error: "Couldn't logout" });
-        const userEmail = req.user.email;
-        const user = await userModel.findOne({ email: userEmail });
-        res.send({ status: "success", message: "Successful logout"});
-    })
+            const userEmail = req.user.email;
+            const user = await userModel.findOne({ email: userEmail });
+            res.send({ status: "success", message: "Successful logout"});
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    
 }
 
