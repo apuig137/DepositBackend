@@ -26,6 +26,11 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
+        // Verificar si la sesión existe
+        if (!req.session) {
+            return res.status(400).send({ status: "error", error: "No active session" });
+        }
+
         req.session.destroy(async err => {
             if (err) {
                 console.log("Error destroying session:", err);
@@ -46,5 +51,6 @@ export const logout = async (req, res) => {
         res.status(500).send({ status: "error", error: "Internal server error" });
     }
 };
+
 
 

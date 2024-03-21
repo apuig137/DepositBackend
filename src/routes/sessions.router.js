@@ -6,7 +6,7 @@ import { login, logout } from "../controllers/sessions.controller.js";
 const router = Router()
 
 router.post("/login", passport.authenticate('login'), login)
-router.get("/logout", logout)
+router.delete("/logout", logout)
 router.get('/form', (req, res) => {
     res.render('login');
 })
