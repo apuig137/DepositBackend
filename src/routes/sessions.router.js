@@ -5,8 +5,8 @@ import { login, logout } from "../controllers/sessions.controller.js";
 
 const router = Router()
 
-router.get("/login", passport.authenticate('login'), login)
-router.get("/logout", logout)
+router.post("/login", passport.authenticate('login'), login)
+router.post("/logout", logout)
 router.get('/form', (req, res) => {
     res.render('login');
 })
