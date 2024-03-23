@@ -1,5 +1,30 @@
 <div>
     <h1>Bienvenido!</h1>
     <p>{{user.email}}</p>
-    <a href="/session/logout"><button>Salir</button></a>
+    <form id="logoutForm" method="POST" action="/session/logout">
+        <button type="submit">Salir</button>
+    </form>
 </div>
+
+<script>
+    document.getElementById('logoutForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        try {
+            const response = await fetch('/session/logout', {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                console.log('Logout exitoso');
+                window.location.href = '/session/form'
+                // Realizar acciones después de un logout exitoso
+            } else {
+                console.log('Logout fallido');
+                // Realizar acciones en caso de un logout fallido
+            }
+        } catch (error) {
+            console.log('Error durante el logout:', error);
+        }
+    });
+</script>
