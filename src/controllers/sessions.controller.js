@@ -17,6 +17,7 @@ export const login = async (req, res) => {
             email: user.email,
         };
 
+        console.log(req.session)
         res.send({ status: "success", payload: req.session.user, message: "Successful login" });
     } catch (error) {
         console.error(error);
@@ -37,13 +38,6 @@ export const logout = async (req, res) => {
                 return res.status(500).send({ status: "error", error: "Couldn't logout" });
             }
 
-            const userEmail = req.user.email;
-            const user = await userModel.findOne({ email: userEmail });
-
-            if (!user) {
-                return res.status(400).send({ status: "error", error: "User not found" });
-            }
-
             res.send({ status: "success", message: "Successful logout" });
         });
     } catch (error) {
@@ -51,6 +45,7 @@ export const logout = async (req, res) => {
         res.status(500).send({ status: "error", error: "Internal server error" });
     }
 };
+
 
 
 

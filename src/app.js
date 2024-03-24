@@ -17,6 +17,16 @@ const app = express()
 const PORT = 8080
 const MONGO = `${config.db}`
 
+const corsOptions = {
+    origin: "http://localhost:3000", // Permite solicitudes desde este origen
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE", // Métodos permitidos
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    allowedHeaders: ["Content-Type", "Authorization"], // Encabezados permitidos
+};
+
+app.use(cors(corsOptions));
+
 mongoose.connect(MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -55,8 +65,6 @@ app.use(express.static(__dirname + '/public'));
 app.engine("handlebars", handlebars.engine())
 app.set("views", __dirname + "/views")
 app.set("view engine", "handlebars")
-
-app.use(cors())
 
 app.use("/products", productsRouter)
 app.use("/session", sessionsRouter)
