@@ -17,8 +17,6 @@ const app = express()
 const PORT = 8080
 const MONGO = `${config.db}`
 
-app.use(cors())
-
 mongoose.connect(MONGO, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -57,6 +55,8 @@ app.use(express.static(__dirname + '/public'));
 app.engine("handlebars", handlebars.engine())
 app.set("views", __dirname + "/views")
 app.set("view engine", "handlebars")
+
+app.use(cors())
 
 app.use("/products", productsRouter)
 app.use("/session", sessionsRouter)
