@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
         require: true
     },
     expiration:{
-        type: String,
+        type: Date,
         require: true
     },
     code:{
