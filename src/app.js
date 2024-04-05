@@ -19,7 +19,7 @@ const MONGO = `${config.db}`;
 
 // Middleware para manejar CORS en toda la aplicación
 app.use(cors({
-    origin: ["http://localhost:3000", "https://deposit-frontend-five.vercel.app/"],
+    origin: ["http://localhost:3000", "https://deposit-frontend-5aitnf2b4-apuig137s-projects.vercel.app/"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
