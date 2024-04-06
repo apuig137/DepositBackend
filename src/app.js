@@ -14,7 +14,7 @@ import passport from "passport";
 import cors from "cors";
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const MONGO = `${config.db}`;
 
 // Middleware para manejar CORS en toda la aplicación
