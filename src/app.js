@@ -12,12 +12,14 @@ import bodyParser from "body-parser";
 import initializePassport from "../config/passport.config.js";
 import passport from "passport";
 import cors from "cors";
+import compression from "compression";
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = 8080;
 const MONGO = `${config.db}`;
 
-// Middleware para manejar CORS en toda la aplicación
+app.use(compression())
+
 app.use(cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -67,7 +69,6 @@ app.set("view engine", "handlebars");
 app.use("/products", productsRouter);
 app.use("/session", sessionsRouter);
 
-// Inicia el servidor
 const httpServer = app.listen(PORT, () => {
     displayRoutes(app);
     console.log(`Server on the port ${PORT}`);
