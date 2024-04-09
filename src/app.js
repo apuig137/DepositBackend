@@ -21,7 +21,7 @@ const MONGO = `${config.db}`;
 app.use(compression())
 
 app.use(cors({
-    origin: "*",
+    origin: ["http://localhost:3000", "https://deposit-frontend-five.vercel.app", "https://deposit-frontend-5aitnf2b4-apuig137s-projects.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -71,6 +71,5 @@ app.use("/session", sessionsRouter);
 
 const httpServer = app.listen(PORT, () => {
     displayRoutes(app);
-    console.log(`Server on the port ${PORT}`);
 });
 
