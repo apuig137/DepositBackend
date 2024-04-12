@@ -27,10 +27,6 @@ const productSchema = new mongoose.Schema({
     quantity:{
         type: Number,
         require: true
-    },
-    batch:{
-        type: String,
-        require: true
     }
 })
 
