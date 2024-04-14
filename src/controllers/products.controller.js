@@ -31,11 +31,11 @@ export const getProductById = async (req, res) => {
 
 
 export const addProduct = async (req, res) => {
-    const { name, expiration, price, quantity, batch } = req.body
+    const { name, expiration, price, quantity } = req.body
 
     let productStock
 
-    if (!name || !expiration || !price || !quantity || !batch) {
+    if (!name || !expiration || !price || !quantity) {
         console.log("All fields are required");
         return res.status(400).send("All fields are required");
     }
@@ -68,7 +68,6 @@ export const addProduct = async (req, res) => {
             price,
             stock: productStock,
             quantity,
-            batch,
             code
         });
         res.send({ status: "success", payload: product });
