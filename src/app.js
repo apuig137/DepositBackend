@@ -32,13 +32,10 @@ mongoose.connect(MONGO, {
     useUnifiedTopology: true
 });
 
-// Middleware para analizar JSON
 app.use(express.json());
 
-// Middleware para analizar datos de formulario
 app.use(express.urlencoded({ extended: true }));
 
-// Manejo de sesiones
 app.use(session({
     store: MongoStore.create({
         mongoUrl: MONGO,
