@@ -96,6 +96,8 @@ export const deleteProduct = async (req, res) => {
 
 export const decreaseStock = async (req, res) => {
     const id = req.params.id;
+    const quantity = req.params.quantity;
+
 
     try {
         const findProduct = await productModel.findOne({_id:id});
@@ -104,7 +106,13 @@ export const decreaseStock = async (req, res) => {
             return res.status(404).json({ status: "error", message: "Product not found" });
         }
 
-        findProduct.stock -= 1
+        if (!quantity) {
+            findProduct.stock -= 1;
+        } else {
+            findProduct.stock -= parseInt(quantity);
+        }
+
+        findProduct.stock -= quantity
         await findProduct.save();
 
         res.json({ status: "success", payload: findProduct });
