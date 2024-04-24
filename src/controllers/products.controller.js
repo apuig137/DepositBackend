@@ -101,8 +101,6 @@ export const deleteProduct = async (req, res) => {
 
 export const decreaseStock = async (req, res) => {
     const id = req.params.id;
-    const quantity = req.params.quantity;
-
 
     try {
         const findProduct = await productModel.findById(id);

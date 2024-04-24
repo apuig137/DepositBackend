@@ -6,7 +6,7 @@ const router = Router()
 router.get("/", getProducts)
 router.get("/:id", getProductById)
 router.post("/", addProduct)
-router.delete("/:id/:quantity", decreaseStock)
+router.delete("/:id", decreaseStock)
 
 export default router
 
