@@ -31,13 +31,18 @@ export const getProductById = async (req, res) => {
 
 
 export const addProduct = async (req, res) => {
-    const { name, expiration, price, quantity } = req.body
+    const { name, expiration, price, quantity: rawQuantity } = req.body
+    const quantity = parseInt(rawQuantity)
 
     let productStock
 
-    if (!name || !expiration || !price || !quantity) {
+    if (!name || !expiration || !price || isNaN(quantity)) {
         console.log("All fields are required");
         return res.status(400).send("All fields are required");
+    }
+
+    if (quantity < 1 || price < 0) {
+        return res.status(400).json({ status: "error", message: "Quantity and price must be positive" });
     }
 
     try {
@@ -98,18 +103,32 @@ export const decreaseStock = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const findProduct = await productModel.findOne({_id:id});
+        const findProduct = await productModel.findById(id);
 
         if (!findProduct) {
             return res.status(404).json({ status: "error", message: "Product not found" });
         }
 
-        findProduct.stock -= 1
-        await findProduct.save();
+        if(findProduct.stock < 0) {
+            await productModel.deleteOne({ _id: id });
+            return res.json({ status: "success", message: "Product deleted." });
+        }
 
-        res.json({ status: "success", payload: findProduct });
+        if (findProduct.stock > 0) {
+            findProduct.stock -= 1;
+
+            if (findProduct.stock === 0) {
+                await productModel.deleteOne({ _id: id });
+                return res.json({ status: "success", message: "Product deleted due to zero stock." });
+            }
+
+            await findProduct.save(); // Solo guardar si el producto no ha sido eliminado
+            return res.json({ status: "success", payload: findProduct });
+        } else {
+            return res.status(400).json({ status: "error", message: "Cannot decrease stock below zero." });
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ status: "error", message: "Error trying to get product by ID" });
+        console.error("Error in decreaseStock:", error);
+        return res.status(500).json({ status: "error", message: "Error decreasing stock." });
     }
 };
