@@ -15,6 +15,10 @@ const productSchema = new mongoose.Schema({
         type: Date,
         require: true
     },
+    expirated:{
+        type: Boolean,
+        require: true
+    },
     code:{
         type: Number,
         require: true,

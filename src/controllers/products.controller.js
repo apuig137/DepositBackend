@@ -8,7 +8,7 @@ export const getProducts = async (req, res) => {
         res.json({ status: "success", payload: products });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ status: "error", message: "Error trying to get products" });
+        res.status(400).json({ status: "error", message: "Error trying to get products" });
     }
 };
 
@@ -37,12 +37,19 @@ export const addProduct = async (req, res) => {
     let productStock
 
     if (!name || !expiration || !price || isNaN(quantity)) {
-        console.log("All fields are required");
         return res.status(400).send("All fields are required");
     }
 
-    if (quantity < 1 || price < 0) {
-        return res.status(400).json({ status: "error", message: "Quantity and price must be positive" });
+    if (isNaN(price) || isNaN(quantity)) {
+        return res.status(401).json({ status: "error", message: "Price and quantity must be numbers" });
+    } else if (quantity < 1 || price < 0) {
+        return res.status(402).json({ status: "error", message: "Quantity and price must be positive" });
+    }
+
+    let currentTime = new Date()
+    let expirationParam = new Date(expiration)
+    if(expirationParam <= currentTime) {
+        return res.status(403).json({ status: "error", message: "The product is expired" });
     }
 
     try {
@@ -57,7 +64,14 @@ export const addProduct = async (req, res) => {
             code = newCode;
         }
 
-        const existingProduct = await productModel.findOne({ name: name });
+        const existingName = await productModel.findOne({ name: name });
+        const existingExpiration = await productModel.findOne({ expiration: expiration });
+
+        let existingProduct = null;
+
+        if (existingName && existingExpiration && existingName._id.toString() === existingExpiration._id.toString()) {
+            existingProduct = existingName
+        }
 
         if (existingProduct) {
             existingProduct.stock += parseInt(quantity)
@@ -70,6 +84,7 @@ export const addProduct = async (req, res) => {
         let product = await productModel.create({
             name,
             expiration,
+            expirated: false,
             price,
             stock: productStock,
             quantity,
@@ -78,15 +93,15 @@ export const addProduct = async (req, res) => {
         res.send({ status: "success", payload: product });
         
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Error trying to create a product");
+        console.error("Error creating product:", error);
+        res.status(500).json({ status: "error", message: "An error occurred while creating the product" });
     }
 }
 
 export const deleteProduct = async (req, res) => {
     const id = req.params.id;
     try {
-        const result = await productModel.findOne({ _id: id });
+        const result = await productModel.deleteOne({ _id: id });
 
         if (result.deletedCount === 1) {
             return res.status(200).json({ status: "success", message: "Product successfully removed" });
@@ -122,7 +137,7 @@ export const decreaseStock = async (req, res) => {
                 return res.json({ status: "success", message: "Product deleted due to zero stock." });
             }
 
-            await findProduct.save(); // Solo guardar si el producto no ha sido eliminado
+            await findProduct.save();
             return res.json({ status: "success", payload: findProduct });
         } else {
             return res.status(400).json({ status: "error", message: "Cannot decrease stock below zero." });
@@ -132,3 +147,25 @@ export const decreaseStock = async (req, res) => {
         return res.status(500).json({ status: "error", message: "Error decreasing stock." });
     }
 };
+
+export const expirateProduct = async (req, res) => {
+    const id = req.params.id
+
+    const findProduct = await productModel.findById(id);
+    const expiration = findProduct.expiration
+
+    try {
+        let currentTime = new Date()
+        let expirationTime = new Date(expiration)
+        if(expirationTime <= currentTime) {
+            findProduct.expirated = true
+            await findProduct.save()
+            return res.json({ status: "success", message: "Successful expiration"});
+        } else {
+            return res.status(400).json({ status: "error", message: "Unexpired product"});
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return res.status(500).json({ status: "error", message: "Error expirating product" });
+    }
+}
