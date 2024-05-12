@@ -8,7 +8,7 @@ export const getProducts = async (req, res) => {
         res.json({ status: "success", payload: products });
     } catch (error) {
         console.error(error);
-        res.status(400).json({ status: "error", message: "Error trying to get products" });
+        res.status(400).json({ status: "error", message: "Error trying to get products", payload: error });
     }
 };
 
@@ -48,7 +48,7 @@ export const addProduct = async (req, res) => {
 
     let currentTime = new Date()
     let expirationParam = new Date(expiration)
-    if(expirationParam <= currentTime) {
+    if(expirationParam < currentTime) {
         return res.status(403).json({ status: "error", message: "The product is expired" });
     }
 
@@ -66,10 +66,11 @@ export const addProduct = async (req, res) => {
 
         const existingName = await productModel.findOne({ name: name });
         const existingExpiration = await productModel.findOne({ expiration: expiration });
+        const existingPrice = await productModel.findOne({ price: price });
 
         let existingProduct = null;
 
-        if (existingName && existingExpiration && existingName._id.toString() === existingExpiration._id.toString()) {
+        if ( existingPrice && existingName && existingExpiration && existingName._id.toString() === existingExpiration._id.toString()) {
             existingProduct = existingName
         }
 
@@ -150,6 +151,7 @@ export const decreaseStock = async (req, res) => {
 
 export const expirateProduct = async (req, res) => {
     const id = req.params.id
+    console.log("Prueba")
 
     const findProduct = await productModel.findById(id);
     const expiration = findProduct.expiration
